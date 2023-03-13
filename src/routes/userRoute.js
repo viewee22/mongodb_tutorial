@@ -1,25 +1,12 @@
 const { Router } = require("express");
 const userRouter = Router();
 const mongoose = require("mongoose");
-const { User } = require("../models/User");
+const { User } = require("../models");
 
 userRouter.get("/", async (req, res) => {
   try {
     const users = await User.find({});
     return res.send({ users: users });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send({ error: error.message });
-  }
-});
-
-userRouter.get("/:userId", async (req, res) => {
-  try {
-    const { userId } = req.params;
-    if (!mongoose.isValidObjectId(userId))
-      return res.status(400).send({ err: "invalid userId" });
-    const user = await User.findOne({ _id: userId });
-    return res.send({ user });
   } catch (error) {
     console.log(error);
     return res.status(500).send({ error: error.message });
@@ -38,6 +25,19 @@ userRouter.post("/", async (req, res) => {
 
     const user = new User(req.body);
     await user.save();
+    return res.send({ user });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ error: error.message });
+  }
+});
+
+userRouter.get("/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    if (!mongoose.isValidObjectId(userId))
+      return res.status(400).send({ err: "invalid userId" });
+    const user = await User.findOne({ _id: userId });
     return res.send({ user });
   } catch (error) {
     console.log(error);
