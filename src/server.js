@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const { userRouter, blogRouter } = require("./routes");
 const mongoose = require("mongoose");
+const { generateFakeData } = require("../faker");
 
 const MONGO_URI =
   "mongodb+srv://viewee22:m4n79CiFXqPr@mongodbtutorial.myskbzf.mongodb.net/BlogService?retryWrites=true&w=majority";
@@ -9,7 +10,9 @@ const MONGO_URI =
 const server = async () => {
   try {
     await mongoose.connect(MONGO_URI);
-    mongoose.set("debug", true);
+    // mongoose.set("debug", true);
+    await generateFakeData(100, 10, 300);
+
     console.log("Mongodb Connected!");
     app.use(express.json());
 
