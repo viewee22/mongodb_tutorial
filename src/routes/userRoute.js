@@ -94,6 +94,4 @@ userRouter.put("/:userId", async (req, res) => {
   }
 });
 
-module.exports = {
-  userRouter,
-};
+module.exports = { userRouter };
