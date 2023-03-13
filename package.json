@@ -2,14 +2,19 @@
   "name": "mongodb",
   "version": "1.0.0",
   "description": "mongodb tutorial",
-  "main": "server.js",
+  "main": "src/server.js",
   "scripts": {
     "test": " ",
-    "start": "node server.js"
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "mongoose": "^7.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.21"
   }
 }
