@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const userRouter = Router();
 const mongoose = require("mongoose");
-const { User, Blog } = require("../models");
+const { User, Blog, Comment } = require("../models");
 
 userRouter.get("/", async (req, res) => {
   try {
@@ -50,8 +50,20 @@ userRouter.delete("/:userId", async (req, res) => {
     const { userId } = req.params;
     if (!mongoose.isValidObjectId(userId))
       return res.status(400).send({ err: "invalid userId" });
-    // const user = await User.findOneAndDelete({ _id: userId });
-    const user = await User.deleteOne({ _id: userId });
+    const [user] = await Promise.all([
+      // 유저 삭제
+      User.findOneAndDelete({ _id: userId }),
+      // 해당 유저의 블로그 글들 삭제
+      Blog.deleteMany({ "user._id": userId }),
+      // 각 블로그 마다의에 해당 유저의 코멘트 제거
+      Blog.updateMany(
+        { "comments.user": userId },
+        { $pull: { comments: { user: userId } } }
+      ),
+      // 유저가 작성한 코멘트 삭제
+      Comment.deleteMany({ user: userId }),
+    ]);
+
     return res.send({ user });
   } catch (error) {
     console.log(error);
