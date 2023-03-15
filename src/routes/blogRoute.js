@@ -10,13 +10,13 @@ blogRouter.post("/", async (req, res) => {
   try {
     const { title, content, islive, userId } = req.body;
     if (typeof title !== "string")
-      res.status(400).send({ err: "title is required" });
+      return res.status(400).send({ err: "title is required" });
     if (typeof content !== "string")
-      res.status(400).send({ err: "content is required" });
-    if (islive && islive !== "boolean")
-      res.status(400).send({ err: "islive must be a boolean" });
+      return res.status(400).send({ err: "content is required" });
+    if (islive && typeof islive !== "boolean")
+      return res.status(400).send({ err: "islive must be a boolean" });
     if (!isValidObjectId(userId))
-      res.status(400).send({ err: "userId is invaild" });
+      return res.status(400).send({ err: "userId is invaild" });
     // 유저가 데이터베이스에 존재하는지 확인
     let user = await User.findById(userId);
     if (!user) res.status(400).send({ err: "user does not exist" });
