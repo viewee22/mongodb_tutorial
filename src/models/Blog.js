@@ -1,5 +1,5 @@
+const { CommentSchema } = require("./Comment");
 const { Schema, model, Types } = require("mongoose");
-// const { CommentSchema } = require("./Comment");
 
 const BlogSchema = new Schema(
   {
@@ -14,7 +14,7 @@ const BlogSchema = new Schema(
         last: { type: String, required: true },
       },
     },
-    // comments: [CommentSchema],
+    comments: [CommentSchema],
   },
   { timestamps: true }
 );

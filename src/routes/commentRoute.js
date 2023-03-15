@@ -27,7 +27,7 @@ commentRouter.post("/", async (req, res) => {
     const comment = new Comment({ content, user, blog });
     await Promise.all([
       comment.save(),
-      // Blog.updateOne({ _id: blogId }, { $push: { comments: comment } }),
+      Blog.updateOne({ _id: blogId }, { $push: { comments: comment } }),
     ]);
     return res.send({ comment });
   } catch (error) {

@@ -1,5 +1,5 @@
 module.exports = {
-  ...require("./blog"),
-  ...require("./comment"),
-  ...require("./user"),
+  ...require("./Blog"),
+  ...require("./Comment"),
+  ...require("./User"),
 };
