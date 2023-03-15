@@ -7,9 +7,7 @@ const URI = "http://localhost:3000";
 
 const test = async () => {
   console.time("loading time : ");
-  let {
-    data: { blogs },
-  } = await axios.get(`${URI}/blog`);
+  await axios.get(`${URI}/blog`);
 
   // console.log(blogs[3]);
   // console.dir(blogs[3], { depth: 10 });
@@ -44,9 +42,7 @@ const testGroup = async () => {
   await test();
   await test();
   await test();
-  await test();
-  await test();
 };
 
-// testGroup();
-test();
+testGroup();
+// test();
