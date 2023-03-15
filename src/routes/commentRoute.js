@@ -15,8 +15,8 @@ commentRouter.post("/", async (req, res) => {
       return res.status(400).send({ error: "content is required" });
 
     const [blog, user] = await Promise.all([
-      Blog.findByIdAndUpdate(blogId),
-      User.findByIdAndUpdate(userId),
+      Blog.findById(blogId),
+      User.findById(userId),
     ]);
 
     if (!blog || !user)
@@ -25,7 +25,10 @@ commentRouter.post("/", async (req, res) => {
       return res.status(400).send({ error: "blog is not available" });
 
     const comment = new Comment({ content, user, blog });
-    await comment.save();
+    await Promise.all([
+      comment.save(),
+      // Blog.updateOne({ _id: blogId }, { $push: { comments: comment } }),
+    ]);
     return res.send({ comment });
   } catch (error) {
     return res.status(400).send({ error: error.message });

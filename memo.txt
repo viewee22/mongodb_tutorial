@@ -1,0 +1,3 @@
+서버실행 
+
+nodemon src/server.js --ignore client.js
