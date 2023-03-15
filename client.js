@@ -11,7 +11,9 @@ const test = async () => {
     data: { blogs },
   } = await axios.get(`${URI}/blog`);
 
-  console.log(blogs);
+  // console.log(blogs[3]);
+  // console.dir(blogs[3], { depth: 10 });
+
   // blogs = await Promise.all(
   //   blogs.map(async (blog) => {
   //     const [res1, res2] = await Promise.all([
