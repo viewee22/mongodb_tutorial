@@ -5,7 +5,7 @@
   "main": "src/server.js",
   "scripts": {
     "test": " ",
-    "start": "node src/server.js",
+    "start": "env-cmd node src/server.js",
     "dev": "env-cmd nodemon src/server.js --ignore client.js"
   },
   "author": "",
