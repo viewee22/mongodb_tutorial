@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const blogRouter = Router();
-const { Blog, User } = require("../models");
+const { Blog, User, Comment } = require("../models");
 const { isValidObjectId } = require("mongoose");
 const { commentRouter } = require("./commentRoute");
 
@@ -50,6 +50,8 @@ blogRouter.get("/:blogId", async (req, res) => {
       res.status(400).send({ err: "blogId is invaild" });
 
     const blog = await Blog.findOne({ _id: blogId });
+    // const commentCount = await Comment.find({ blog: blogId }).countDocuments();
+
     return res.send({ blog });
   } catch (error) {
     console.log(error);

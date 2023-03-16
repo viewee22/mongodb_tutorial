@@ -16,7 +16,8 @@ generateFakeData = async (userCount, blogsPerUser, commentsPerUser) => {
   for (let i = 0; i < userCount; i++) {
     users.push(
       new User({
-        username: faker.internet.userName() + parseInt(Math.random() * 100),
+        username:
+          faker.internet.userName() + parseInt(Math.random() * 1000000000),
         name: {
           first: faker.name.firstName(),
           last: faker.name.lastName(),
@@ -26,7 +27,7 @@ generateFakeData = async (userCount, blogsPerUser, commentsPerUser) => {
       })
     );
   }
-
+  /* 
   users.map((user) => {
     for (let i = 0; i < blogsPerUser; i++) {
       blogs.push(
@@ -52,6 +53,7 @@ generateFakeData = async (userCount, blogsPerUser, commentsPerUser) => {
       );
     }
   });
+ */
 
   console.log("fake data inserting to database...");
   await User.insertMany(users);

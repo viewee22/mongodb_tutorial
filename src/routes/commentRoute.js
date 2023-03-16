@@ -28,12 +28,24 @@ commentRouter.post("/", async (req, res) => {
       content,
       user,
       userFullName: `${user.name.first} ${user.name.last}`,
-      blog,
+      blog: blogId,
     });
+    // await Promise.all([
+    //   comment.save(),
+    //   Blog.updateOne({ _id: blogId }, { $push: { comments: comment } }),
+    // ]);
+
+    blog.commentsCount++;
+    blog.comments.push(comment);
+    // 첫번째 객체가 날라감
+    if (blog.commentsCount > 3) blog.comments.shift();
+
     await Promise.all([
       comment.save(),
-      Blog.updateOne({ _id: blogId }, { $push: { comments: comment } }),
+      blog.save(),
+      // Blog.updateOne({ _id: blogId }, { $inc: { commentsCount: 1 } }),
     ]);
+
     return res.send({ comment });
   } catch (error) {
     return res.status(400).send({ error: error.message });
@@ -41,11 +53,17 @@ commentRouter.post("/", async (req, res) => {
 });
 
 commentRouter.get("/", async (req, res) => {
+  let { page = 0 } = req.query;
+  page = parseInt(page);
+
   const { blogId } = req.params;
   if (!isValidObjectId(blogId))
     return res.status(400).send({ err: "blogId is invalid" });
 
-  const comments = await Comment.find({ blog: blogId });
+  const comments = await Comment.find({ blog: blogId })
+    .sort({ createdAt: -1 })
+    .skip(page * 3)
+    .limit(3);
   return res.send({ comments });
 });
 
