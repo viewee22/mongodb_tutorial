@@ -4,11 +4,11 @@ const { userRouter, blogRouter } = require("./routes");
 const mongoose = require("mongoose");
 const { generateFakeData } = require("../faker2");
 
-const MONGO_URI =
-  "mongodb+srv://viewee22:m4n79CiFXqPr@mongodbtutorial.myskbzf.mongodb.net/BlogService?retryWrites=true&w=majority";
-
 const server = async () => {
   try {
+    const { MONGO_URI } = process.env;
+    if (!MONGO_URI) throw new Error("MONGO_URI is required!!!");
+
     await mongoose.connect(MONGO_URI);
     // mongoose.set("debug", true);
 

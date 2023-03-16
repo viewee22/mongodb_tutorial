@@ -44,5 +44,5 @@ const testGroup = async () => {
   await test();
 };
 
-testGroup();
-// test();
+// testGroup();
+test();
