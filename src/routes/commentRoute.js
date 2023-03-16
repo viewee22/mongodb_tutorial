@@ -1,54 +1,60 @@
 const { Router } = require("express");
 const commentRouter = Router({ mergeParams: true });
 const { Blog, User, Comment } = require("../models");
-const { isValidObjectId } = require("mongoose");
+const { isValidObjectId, startSession } = require("mongoose");
 
 commentRouter.post("/", async (req, res) => {
+  const session = await startSession();
+  let comment;
   try {
-    const { blogId } = req.params;
-    const { content, userId } = req.body;
-    if (!isValidObjectId(blogId))
-      return res.status(400).send({ error: "blogId is invalid" });
-    if (!isValidObjectId(userId))
-      return res.status(400).send({ error: "userId is invalid" });
-    if (typeof content !== "string")
-      return res.status(400).send({ error: "content is required" });
+    await session.withTransaction(async () => {
+      const { blogId } = req.params;
+      const { content, userId } = req.body;
+      if (!isValidObjectId(blogId))
+        return res.status(400).send({ error: "blogId is invalid" });
+      if (!isValidObjectId(userId))
+        return res.status(400).send({ error: "userId is invalid" });
+      if (typeof content !== "string")
+        return res.status(400).send({ error: "content is required" });
 
-    const [blog, user] = await Promise.all([
-      Blog.findById(blogId),
-      User.findById(userId),
-    ]);
+      const [blog, user] = await Promise.all([
+        Blog.findById(blogId, {}, { session }),
+        User.findById(userId, {}, { session }),
+      ]);
 
-    if (!blog || !user)
-      return res.status(400).send({ error: "blog or user not exist" });
-    if (!blog.islive)
-      return res.status(400).send({ error: "blog is not available" });
+      if (!blog || !user)
+        return res.status(400).send({ error: "blog or user not exist" });
+      if (!blog.islive)
+        return res.status(400).send({ error: "blog is not available" });
 
-    const comment = new Comment({
-      content,
-      user,
-      userFullName: `${user.name.first} ${user.name.last}`,
-      blog: blogId,
+      comment = new Comment({
+        content,
+        user,
+        userFullName: `${user.name.first} ${user.name.last}`,
+        blog: blogId,
+      });
+      // await Promise.all([
+      //   comment.save(),
+      //   Blog.updateOne({ _id: blogId }, { $push: { comments: comment } }),
+      // ]);
+      await session.abortTransaction();
+
+      blog.commentsCount++;
+      blog.comments.push(comment);
+      // 첫번째 객체가 날라감
+      if (blog.commentsCount > 3) blog.comments.shift();
+
+      await Promise.all([
+        comment.save({ session }),
+        blog.save({}),
+        // Blog.updateOne({ _id: blogId }, { $inc: { commentsCount: 1 } }),
+      ]);
     });
-    // await Promise.all([
-    //   comment.save(),
-    //   Blog.updateOne({ _id: blogId }, { $push: { comments: comment } }),
-    // ]);
-
-    blog.commentsCount++;
-    blog.comments.push(comment);
-    // 첫번째 객체가 날라감
-    if (blog.commentsCount > 3) blog.comments.shift();
-
-    await Promise.all([
-      comment.save(),
-      blog.save(),
-      // Blog.updateOne({ _id: blogId }, { $inc: { commentsCount: 1 } }),
-    ]);
-
     return res.send({ comment });
   } catch (error) {
     return res.status(400).send({ error: error.message });
+  } finally {
+    await session.endSession();
   }
 });
 
